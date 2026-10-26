@@ -1,0 +1,91 @@
+name: Verify RIFT ENGINE Portfolio
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax and complete-page integrity
+        run: |
+          node --check rift.js
+          node --check portfolio.js
+          node <<'NODE'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const html=fs.readFileSync('index.html','utf8');
+          const js=fs.readFileSync('rift.js','utf8'),portfolio=fs.readFileSync('portfolio.js','utf8');
+          for(const id of ['rift','riftStage','riftCanvas','riftGalleryUi','riftModal','riftEnter','riftBack','riftWorkLink','riftExperienceLink','pfProjectGrid','pfModal','work','experience','about','skills','contact'])
+            assert(html.includes('id="'+id+'"'),'Missing '+id);
+          for(const f of ['rift.js','rift.css','base.css','portfolio.js','portfolio.css'])
+            assert(fs.statSync(f).size>900,'Missing or empty '+f);
+          assert(js.includes('new THREE.ExtrudeGeometry'),'Real mechanical 3D geometry missing');
+          assert(js.includes('function spring('),'Proximity spring physics missing');
+          assert(js.includes('buildGallery()'),'3D world gallery missing');
+          assert.equal((portfolio.match(/categoryLabel:/g)||[]).length,34,'All 34 project details must be included');
+          assert(!html.includes('id="sceneCanvas"'),'PRISM FIELD must not be copied');
+          console.log('Source integrity and 3D geometry checks passed');
+          NODE
+      - name: Install browser harness
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Browser test (desktop/tablet/mobile)
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/rift-preview.log 2>&1 &
+          sleep 2
+          node <<'NODE'
+          const {chromium}=require('playwright-core'),fs=require('fs');
+          (async()=>{
+            const executablePath=['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium'].find(p=>fs.existsSync(p));
+            if(!executablePath)throw Error('Browser not available');
+            const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-webgl','--disable-software-rasterizer']});
+            try{
+              for(const v of [{width:1440,height:900},{width:820,height:1180},{width:390,height:844},{width:320,height:720}]){
+                const page=await browser.newPage({viewport:v,hasTouch:v.width<500,isMobile:v.width<500});
+                const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+                await page.locator('#riftEnter').waitFor({state:'visible'});
+                await page.locator('#riftEnter').click();
+                await page.locator('#riftGalleryUi').waitFor({state:'visible',timeout:12000});
+                await page.locator('#riftProjectNav [data-project="0"]').click();
+                await page.locator('#riftModal').waitFor({state:'visible'});
+                await page.locator('#riftModalClose').click();
+                await page.locator('#riftModal').waitFor({state:'hidden'});
+                await page.locator('#riftBack').click();
+                await page.locator('#work').scrollIntoViewIfNeeded();
+                if(await page.locator('.pf-project').count()!==12)throw Error('Project gallery did not render');
+                await page.locator('[data-filter="design"]').click();
+                if(await page.locator('.pf-project').count()!==9)throw Error('Design filter did not show nine originals');
+                await page.locator('.pf-project').first().click();
+                await page.locator('#pfModal').waitFor({state:'visible'});
+                await page.locator('#pfModalClose').click();
+                await page.locator('[data-filter="all"]').click();
+                await page.locator('#pfLoadMore').click();
+                if(await page.locator('.pf-project').count()!==24)throw Error('Load more did not expand catalog');
+                if(await page.locator('.pf-job').count()!==3)throw Error('Experience missing');
+                if(!await page.locator('#about').textContent().then(s=>s.includes('IGNOU')))throw Error('Education missing');
+                if(!await page.locator('#skills').textContent().then(s=>s.includes('After Effects')))throw Error('Software missing');
+                if(!await page.locator('.pf-email').getAttribute('href').then(s=>s.startsWith('mailto:')))throw Error('Contact invalid');
+                const diag=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,work:document.querySelectorAll('.pf-project').length}));
+                console.log('RIFT RESPONSIVE',JSON.stringify(diag));
+                if(diag.scrollWidth>diag.width+2)throw Error('Horizontal page overflow');
+                if(errors.length)throw Error('JS errors: '+errors.join('; '));
+                await page.screenshot({path:'rift-'+v.width+'.png'});
+                await page.close();
+              }
+              console.log('RIFT ENGINE + complete portfolio desktop/tablet/mobile checks PASSED');
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rift-responsive-previews
+          path: rift-*.png
+          if-no-files-found: ignore
