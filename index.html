@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070709">
+<meta name="description" content="Harnarayan / GEN5ROM — Video Editor & Motion Graphics Designer. RIFT ENGINE interactive 3D experience, 34 real creative projects, professional experience, video editing, motion, VFX, skills and contact.">
+<meta property="og:title" content="Harnarayan — RIFT ENGINE / Motion Design & Video Portfolio">
+<meta property="og:description" content="Move your cursor. Bend reality. Explore the immersive 3D portfolio of Harnarayan, motion graphics designer and video editor.">
+<title>Harnarayan — RIFT ENGINE | GEN5ROM Creative Portfolio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23050507' width='64' height='64' rx='12'/%3E%3Ccircle cx='32' cy='32' r='18' fill='%23ff1838'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./rift.css">
+<link rel="stylesheet" href="./portfolio.css">
+<script defer src="./rift.js"></script>
+<script defer src="./portfolio.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#work">Skip to portfolio</a>
+  <!-- RIFT ENGINE — full-screen live mechanical anomaly, transferred from PORTFOLIO -->
+  <section class="rift-section" id="rift" aria-label="Rift Engine, interactive 3D anomaly and project world">
+    <div class="rift-world" id="riftStage" role="region" aria-label="Interactive 3D mechanical anomaly. Move or drag to distort the structure, activate the core to enter the dimensional project world.">
+      <div class="rift-fallback" id="riftFallback" aria-hidden="true">
+        <div class="rift-fallback-rings"><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="rift-fallback-core"></span>
+        <span class="rift-fallback-energy"></span>
+      </div>
+      <canvas id="riftCanvas" aria-hidden="true"></canvas>
+      <div class="rift-smoke" aria-hidden="true"></div>
+      <div class="rift-vignette" aria-hidden="true"></div>
+    </div>
+
+    <header class="rift-nav shell">
+      <a class="rift-mark" id="riftExperienceLink" href="#rift" aria-label="GEN5ROM Rift Engine home">GEN<span>5</span>ROM <b></b></a>
+      <nav aria-label="Rift navigation">
+        <a href="#work">WORK</a>
+        <a href="#experience">EXPERIENCE</a>
+        <a href="#about">ABOUT</a>
+        <a href="#contact">CONTACT</a>
+        <button type="button" id="riftWorkLink">3D GALLERY ↗</button>
+      </nav>
+      <div class="rift-nav-end"><span class="rift-nav-live"></span><span>LIVE / 001</span></div>
+    </header>
+
+    <div class="rift-copy">
+      <div class="rift-index"><span>01</span><span class="rift-index-line"></span><span>LIVE 3D / MECHANICAL ANOMALY</span></div>
+      <h2>RIFT<br>ENGINE<span class="rift-dot">.</span></h2>
+      <p>MOVE THE CURSOR. BEND REALITY.</p>
+      <button type="button" class="rift-enter" id="riftEnter">
+        <span class="rift-enter-symbol" aria-hidden="true">✳</span>
+        OPEN THE RIFT <span aria-hidden="true">↗</span>
+      </button>
+    </div>
+
+    <div class="rift-side-note" aria-hidden="true"><span>PROXIMITY</span><span>DISTORTS</span><span>REALITY</span></div>
+
+    <div class="rift-load" id="riftLoading" role="status" aria-live="polite">
+      <span class="rift-load-label">INITIALIZING ANOMALY</span><span class="rift-load-track"><i id="riftLoadFill"></i></span>
+    </div>
+
+    <div class="rift-gallery-ui" id="riftGalleryUi" hidden>
+      <div class="rift-gallery-heading">
+        <div class="rift-index"><span>03</span><span class="rift-index-line"></span><span>BEYOND THE EVENT HORIZON</span></div>
+        <h2>INSIDE<br>THE RIFT<span>.</span></h2>
+        <p>Explore four featured films in 3D, then discover the full portfolio below.</p>
+      </div>
+      <div class="rift-project-nav" id="riftProjectNav" aria-label="Selectable 3D projects">
+        <button type="button" data-project="0"><span>01</span><strong>ZIGENCY / SAAS</strong><em>↗</em></button>
+        <button type="button" data-project="1"><span>02</span><strong>ZIGENCY 360°</strong><em>↗</em></button>
+        <button type="button" data-project="2"><span>03</span><strong>NOIDA / REEL</strong><em>↗</em></button>
+        <button type="button" data-project="3"><span>04</span><strong>ZIGENCY / AI</strong><em>↗</em></button>
+      </div>
+      <a class="rift-all-link" href="#work">EXPLORE ALL PROJECTS ↓</a>
+      <button type="button" id="riftBack" class="rift-back">← RETURN TO ANOMALY</button>
+    </div>
+
+    <div class="rift-bottom shell">
+      <div class="rift-drag-hint"><span class="rift-drag-icon">◎</span> <span id="riftState" role="status" aria-live="polite">DRAG TO EXPLORE</span><i></i></div>
+      <div class="rift-bottom-right"><span id="riftProximity">PROXIMITY 00%</span><span class="rift-divider"></span><span id="riftPageIndex">01 / 02</span><button type="button" id="riftReset" aria-label="Reset the Rift Engine" title="Reset Rift Engine">↺</button></div>
+    </div>
+    <div class="rift-mobile-guide">TOUCH · DRAG · TAP THE CORE</div>
+  </section>
+
+  <div class="rift-modal" id="riftModal" hidden>
+    <div class="rift-modal-backdrop" data-rift-close></div>
+    <div class="rift-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="riftModalTitle">
+      <div class="rift-modal-top"><span>PROJECT TRANSMISSION / GEN5ROM</span><button id="riftModalClose" type="button" aria-label="Close project">✕</button></div>
+      <h2 id="riftModalTitle">MOTION STUDY</h2>
+      <p id="riftModalDescription">Selected motion design sample.</p>
+      <div id="riftVideoMount" class="rift-video-mount"></div>
+      <div class="rift-modal-bottom"><a id="riftOriginalLink" href="https://youtu.be/yDnmJa0fTsw" target="_blank" rel="noopener noreferrer">WATCH ORIGINAL ↗</a><span>ESC TO RETURN</span></div>
+    </div>
+  </div>
+
+
+<main id="portfolio" class="pf-site">
+<nav class="pf-sticky" aria-label="Portfolio navigation">
+ <div class="pf-container pf-sticky-inner">
+  <a class="pf-brand" href="#rift">GEN<span>5</span>ROM / RIFT</a>
+  <div class="pf-nav-links"><a href="#work">WORK</a><a href="#experience">EXPERIENCE</a><a href="#about">ABOUT</a><a href="#skills">SKILLS</a><a href="#contact">CONTACT</a></div>
+  <a class="pf-nav-mail" href="mailto:narayansingh28489@gmail.com">LET'S TALK ↗</a>
+ </div>
+</nav>
+<div class="pf-container pf-intro">
+ <div class="pf-kicker"><span>00</span><i></i> THE CREATIVE BEHIND THE MACHINE</div>
+ <div class="pf-intro-grid">
+  <h2>Ideas made<br><em>visible.</em></h2>
+  <div class="pf-intro-aside"><p>I'm <strong>Harnarayan</strong>, a video editor and motion graphics designer based in New Delhi. I translate complex ideas into expressive, human visual stories.</p>
+   <div class="pf-cta-line"><a class="pf-action" href="#work">EXPLORE MY WORK <span>↗</span></a><a class="pf-minor" href="https://harnarayan-gen5rom.github.io/GEN5ROM/assets/harnarayan-resume.pdf" target="_blank" rel="noopener noreferrer">VIEW RESUME ↗</a></div>
+   <div class="pf-mini-meta"><span>1 YEAR PROFESSIONAL EXPERIENCE</span><span>NEW DELHI, INDIA</span></div>
+  </div>
+ </div>
+</div>
+<section class="pf-section pf-work" id="work" aria-labelledby="workTitle">
+ <div class="pf-container">
+  <div class="pf-section-heading"><div><div class="pf-kicker"><span>01 / 05</span><i></i> REAL PROJECTS / CREATIVE ARCHIVE</div><h2 id="workTitle">Work that <em>moves.</em></h2></div><p>Explore all 34 films and visual designs from my original GEN5ROM portfolio. Videos, motion graphics, visual effects, AI stories and artworks.</p></div>
+  <div class="pf-work-toolbar"><div class="pf-filter-list" id="pfFilters" role="group" aria-label="Filter projects">
+   <button class="active" data-filter="all" type="button" aria-pressed="true">All work</button>
+   <button data-filter="motion" type="button" aria-pressed="false">Motion graphics</button>
+   <button data-filter="video" type="button" aria-pressed="false">Video editing</button>
+   <button data-filter="kids" type="button" aria-pressed="false">AI stories</button>
+   <button data-filter="design" type="button" aria-pressed="false">Graphic design</button>
+  </div><span class="pf-count" id="pfProjectCount">34 PROJECTS</span></div>
+  <div class="pf-work-grid" id="pfProjectGrid" aria-live="polite"></div>
+  <div class="pf-more"><button id="pfLoadMore" type="button">VIEW MORE WORK <span>↓</span><small id="pfLoadLabel">12 OF 34</small></button></div>
+ </div>
+</section>
+<section class="pf-section pf-experience" id="experience" aria-labelledby="expTitle">
+ <div class="pf-container">
+  <div class="pf-section-heading"><div><div class="pf-kicker"><span>02 / 05</span><i></i> CAREER / EXPERIENCE</div><h2 id="expTitle">Experience & <em>growth.</em></h2></div><p>From research and storyboarding to final edits, every project has helped sharpen my craft.</p></div>
+  <div class="pf-timeline">
+   <article class="pf-job"><div class="pf-job-date"><span>01</span><strong>APR 2026 — SEP 2026</strong></div><div class="pf-job-detail"><div class="pf-job-heading"><span>ZIGENCY</span><small>DELHI · FULL-TIME</small></div><h3>Video Editor & Motion Graphics Designer</h3><p>Created real-estate showcases, property marketing reels, AI technology explainers and brand content. Developed animated typography, motion graphics, VFX, transitions and sound finishing, often taking a concept from script to final delivery.</p><div class="pf-tag-row"><span>Real-estate marketing</span><span>AI & technology</span><span>Brand campaigns</span><span>Social-first content</span></div><a class="pf-inline-link" href="https://www.instagram.com/zigency.in/" target="_blank" rel="noopener noreferrer">SEE BRAND CONTENT ↗</a></div></article>
+   <article class="pf-job"><div class="pf-job-date"><span>02</span><strong>NOV 2025 — APR 2026</strong></div><div class="pf-job-detail"><div class="pf-job-heading"><span>INDEPENDENT PROJECTS</span><small>NEW DELHI</small></div><h3>Freelance Video Editor & Motion Graphics Designer</h3><p>Edited long- and short-form video for creators and digital content, adapting narrative pacing, text animation, supporting graphics and visual style to each platform.</p><div class="pf-tag-row"><span>Creator content</span><span>Video editing</span><span>Motion graphics</span></div></div></article>
+   <article class="pf-job"><div class="pf-job-date"><span>03</span><strong>AUG 2025 — OCT 2025</strong></div><div class="pf-job-detail"><div class="pf-job-heading"><span>NEOFOX MEDIA</span><small>DELHI · INTERNSHIP</small></div><h3>Video Editor Intern</h3><p>Edited long-form and short-form videos, promotional trailers and showreels. Organized footage, refined narrative cuts, developed text overlays, and incorporated client revisions, audio finishing and color grading.</p><div class="pf-tag-row"><span>Post-production</span><span>Audio & color</span><span>Promotional content</span></div></div></article>
+  </div>
+ </div>
+</section>
+<section class="pf-section pf-about" id="about" aria-labelledby="aboutTitle">
+ <div class="pf-container">
+  <div class="pf-section-heading"><div><div class="pf-kicker"><span>03 / 05</span><i></i> THE PERSON BEHIND THE WORK</div><h2 id="aboutTitle">Beyond the <em>timeline.</em></h2></div></div>
+  <div class="pf-about-grid">
+   <figure class="pf-portrait"><img src="https://harnarayan-gen5rom.github.io/GEN5ROM/assets/harnarayan-profile.webp" alt="Harnarayan, video editor and motion graphics designer" loading="lazy" decoding="async"><figcaption class="pf-photo-caption"><span>HARNARAYAN / GEN5ROM</span><span>NEW DELHI, INDIA</span></figcaption></figure>
+   <div class="pf-bio"><p class="pf-bio-lead">I don't just edit clips. I build the rhythm, visual language and movement that give ideas character.</p><p>I have about one year of professional experience in real estate marketing, creator content and AI-focused digital media. My workflow covers research, scripts, storyboards, first drafts, feedback and final delivery.</p><p>I'm always learning and exploring the intersection of motion design, compositing, visual effects and interactive 3D.</p><div class="pf-education"><span>EDUCATION & TRAINING</span><div><strong>Bachelor of Science (Biology) — Pursuing</strong><small>Indira Gandhi National Open University (IGNOU) · Distance learning</small></div><div><strong>Graphic Design & Motion Graphics Training</strong><small>DICE Academy · New Delhi</small></div></div><a class="pf-action" href="https://harnarayan-gen5rom.github.io/GEN5ROM/assets/harnarayan-resume.pdf" target="_blank" rel="noopener noreferrer">VIEW FULL RESUME <span>↗</span></a></div>
+  </div>
+ </div>
+</section>
+<section class="pf-section pf-skills" id="skills" aria-labelledby="skillsTitle">
+ <div class="pf-container">
+  <div class="pf-section-heading"><div><div class="pf-kicker"><span>04 / 05</span><i></i> SKILLS & TOOLS</div><h2 id="skillsTitle">Creative <em>capabilities.</em></h2></div><p>The tools, processes and visual disciplines I use to bring stories and ideas to life.</p></div>
+  <div class="pf-strength-grid">
+   <div class="pf-strength"><span>01 / EXPERTISE</span><h3>Motion graphics</h3><p>Visual storytelling, kinetic typography, SaaS explainers and animation.</p></div>
+   <div class="pf-strength"><span>02 / EXPERTISE</span><h3>Video editing</h3><p>Commercial edits, creator content, pacing, sound finishing and grading.</p></div>
+   <div class="pf-strength"><span>03 / EXPERTISE</span><h3>VFX & compositing</h3><p>Motion tracking, visual layers, effects and seamless transitions.</p></div>
+   <div class="pf-strength"><span>04 / EXPERTISE</span><h3>Interactive design</h3><p>Spline 3D experiments, spatial motion, Framer and interactive concepts.</p></div>
+  </div>
+  <div class="pf-tools-grid"><div><h3>SOFTWARE</h3><div class="pf-skill-list"><span>After Effects</span><span>Premiere Pro</span><span>Illustrator</span><span>Photoshop</span><span>Adobe Dimension</span><span>DaVinci Resolve</span><span>Spline</span><span>Framer</span></div></div><div><h3>WORKFLOWS</h3><div class="pf-skill-list"><span>2D Animation</span><span>Editing</span><span>VFX</span><span>Motion tracking</span><span>Graphic design</span><span>Color grading</span><span>Sound design</span><span>Storyboarding</span><span>Social content</span><span>AI-assisted media</span></div></div></div>
+  <div class="pf-lab"><div><span class="pf-lab-label">REAL-TIME INTERACTIVE / EXPERIMENT 01</span><h3>Return to the <em>Rift.</em></h3><p>The 3D mechanical anomaly above reacts to pointer proximity, magnetic distortion, drag and touch—tap the core to explore the dimensional project gallery.</p></div><a href="#rift" class="pf-action">REENTER 3D EXPERIENCE <span>↗</span></a></div>
+ </div>
+</section>
+<section class="pf-section pf-contact" id="contact" aria-labelledby="contactTitle">
+ <div class="pf-container"><div class="pf-kicker"><span>05 / 05</span><i></i> COLLABORATE</div>
+  <div class="pf-contact-grid"><h2 id="contactTitle">Let's make<br><em>it move.</em></h2><div class="pf-contact-right"><p>Need a motion-driven brand story, engaging explainer or video edit? Reach out for collaborations, freelance opportunities and creative projects.</p><a class="pf-email" href="mailto:narayansingh28489@gmail.com">narayansingh28489@gmail.com <span>↗</span></a><div class="pf-socials"><a href="tel:+917503875055">CALL / +91 75038 75055 <span>↗</span></a><a href="https://github.com/harnarayan-gen5rom" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="https://harnarayan-gen5rom.github.io/GEN5ROM/" target="_blank" rel="noopener noreferrer">ORIGINAL PORTFOLIO ↗</a><a href="https://prod.spline.design/bCzuLFEqzOSbl9ic/scene.splinecode" target="_blank" rel="noopener noreferrer">SPLINE 3D ↗</a></div></div></div>
+  <footer class="pf-end-footer"><a href="#rift">GEN5ROM / RIFT ENGINE ↑</a><span>MADE IN NEW DELHI · MOTION IN EVERYTHING</span><a href="https://harnarayan-gen5rom.github.io/GEN5ROM/assets/harnarayan-resume.pdf" target="_blank" rel="noopener noreferrer">RESUME ↗</a></footer>
+ </div>
+</section>
+</main>
+<div class="pf-modal" id="pfModal" hidden role="presentation"><div class="pf-modal-shade" data-pf-close></div><div class="pf-modal-panel" role="dialog" aria-modal="true" aria-labelledby="pfModalTitle"><div class="pf-modal-top"><span>GEN5ROM / PROJECT ARCHIVE</span><button id="pfModalClose" aria-label="Close project" type="button">✕</button></div><div class="pf-modal-meta"><span id="pfModalCategory"></span><h3 id="pfModalTitle"></h3></div><div class="pf-embed" id="pfMedia"></div><div class="pf-modal-actions"><a id="pfOriginal" href="#" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL ↗</a><span>ESC TO CLOSE</span></div></div></div>
+<noscript><div class="noscript">JavaScript is required for the interactive 3D. <a href="https://harnarayan-gen5rom.github.io/GEN5ROM/">Explore my original portfolio.</a></div></noscript>
+
+</body>
+</html>
