@@ -22,7 +22,7 @@ jobs:
           const js=fs.readFileSync('rift.js','utf8'),portfolio=fs.readFileSync('portfolio.js','utf8');
           for(const id of ['rift','riftStage','riftCanvas','riftGalleryUi','riftModal','riftEnter','riftBack','riftWorkLink','riftExperienceLink','pfProjectGrid','pfModal','work','experience','about','skills','contact'])
             assert(html.includes('id="'+id+'"'),'Missing '+id);
-          for(const f of ['rift.js','rift.css','base.css','portfolio.js','portfolio.css'])
+          for(const f of ['rift.js','rift.css','base.css','portfolio.js','portfolio.css','responsive-fixes.css'])
             assert(fs.statSync(f).size>900,'Missing or empty '+f);
           assert(js.includes('new THREE.ExtrudeGeometry'),'Real mechanical 3D geometry missing');
           assert(js.includes('function spring('),'Proximity spring physics missing');
@@ -46,13 +46,49 @@ jobs:
             if(!executablePath)throw Error('Browser not available');
             const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-webgl','--disable-software-rasterizer']});
             try{
-              for(const v of [{width:1440,height:900},{width:820,height:1180},{width:390,height:844},{width:320,height:720}]){
+              for(const v of [{width:1440,height:900},{width:1024,height:768},{width:820,height:1180},{width:560,height:760},{width:430,height:932},{width:390,height:844},{width:360,height:740},{width:320,height:720},{width:320,height:600}]){
                 const page=await browser.newPage({viewport:v,hasTouch:v.width<500,isMobile:v.width<500});
                 const errors=[];page.on('pageerror',e=>errors.push(e.message));
                 await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
                 await page.locator('#riftEnter').waitFor({state:'visible'});
+                const layout=async phase=>page.evaluate((phase)=>{
+                  const names=phase==='hero'?['.rift-nav','.rift-copy','.rift-bottom']:
+                    ['.rift-nav','.rift-gallery-heading','.rift-project-nav','.rift-back','.rift-all-link','.rift-bottom'];
+                  const boxes={};
+                  for(const selector of names){
+                    const el=document.querySelector(selector),st=el&&getComputedStyle(el);
+                    if(!el||st.display==='none'||st.visibility==='hidden')continue;
+                    const r=el.getBoundingClientRect();
+                    boxes[selector]={left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};
+                  }
+                  const overlap=(a,b)=>{
+                    const x=boxes[a],y=boxes[b];if(!x||!y)return false;
+                    return Math.min(x.right,y.right)-Math.max(x.left,y.left)>4&&
+                      Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>4;
+                  };
+                  const pairs=phase==='hero'?
+                   [['.rift-nav','.rift-copy'],['.rift-copy','.rift-bottom']]:
+                   [['.rift-nav','.rift-gallery-heading'],['.rift-gallery-heading','.rift-back'],
+                    ['.rift-gallery-heading','.rift-all-link'],['.rift-back','.rift-all-link'],
+                    ['.rift-project-nav','.rift-bottom'],['.rift-project-nav','.rift-back'],
+                    ['.rift-project-nav','.rift-all-link']];
+                  const violations=pairs.filter(([a,b])=>overlap(a,b)).map(p=>p.join(' <> '));
+                  if(phase==='gallery'&&getComputedStyle(document.querySelector('.rift-copy')).visibility!=='hidden')
+                    violations.push('old hero still visible inside gallery');
+                  return {phase,viewport:[innerWidth,innerHeight],rects:boxes,violations,scrollWidth:document.documentElement.scrollWidth};
+                },phase);
+                const heroBoxes=await layout('hero');
+                console.log('RIFT HERO LAYOUT',JSON.stringify(heroBoxes));
+                if(heroBoxes.violations.length)throw Error('Hero overlaps: '+JSON.stringify(heroBoxes.violations));
+
                 await page.locator('#riftEnter').click();
                 await page.locator('#riftGalleryUi').waitFor({state:'visible',timeout:12000});
+                await page.waitForTimeout(120);
+                const galleryBoxes=await layout('gallery');
+                console.log('RIFT GALLERY LAYOUT',JSON.stringify(galleryBoxes));
+                if(galleryBoxes.violations.length)throw Error('Gallery overlaps: '+JSON.stringify(galleryBoxes.violations));
+                await page.screenshot({path:'gallery-'+v.width+'.png'});
+
                 await page.locator('#riftProjectNav [data-project="0"]').click();
                 await page.locator('#riftModal').waitFor({state:'visible'});
                 await page.locator('#riftModalClose').click();
@@ -87,5 +123,7 @@ jobs:
         if: always()
         with:
           name: rift-responsive-previews
-          path: rift-*.png
+          path: |
+            rift-*.png
+            gallery-*.png
           if-no-files-found: ignore
