@@ -1,0 +1,75 @@
+name: RIFT ENGINE Real WebGL GPU Probe
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gpu-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser test
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Inspect actual Three.js render on desktop and phone
+        continue-on-error: true
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/rift-http.log 2>&1 &
+          sleep 2
+          node <<'NODE'
+          const {chromium}=require('playwright-core');
+          const fs=require('fs');
+          (async()=>{
+            const exe=['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium'].find(fs.existsSync);
+            if(!exe)throw Error('Chromium unavailable');
+            const browser=await chromium.launch({executablePath:exe,headless:true,args:['--no-sandbox','--enable-webgl','--enable-unsafe-swiftshader','--use-angle=swiftshader','--disable-gpu-sandbox']});
+            try{
+              for(const device of [{width:1440,height:900,dpr:1.5},{width:390,height:844,dpr:2}]){
+                const page=await browser.newPage({viewport:{width:device.width,height:device.height},deviceScaleFactor:device.dpr,hasTouch:device.width<500,isMobile:device.width<500});
+                const errors=[];
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+                await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+                try{await page.locator('#riftStage.ready').waitFor({timeout:26000})}
+                catch(e){console.log('WEBGL INIT TIMEOUT',device.width)}
+                const initial=await page.evaluate(()=>{
+                  const canvas=document.querySelector('#riftCanvas');
+                  return {
+                    ready:document.querySelector('#riftStage')?.classList.contains('ready'),
+                    screenWidth:canvas.clientWidth,screenHeight:canvas.clientHeight,
+                    bufferWidth:canvas.width,bufferHeight:canvas.height,
+                    context:!!canvas.getContext('webgl2')
+                  };
+                });
+                console.log('RIFT REAL WEBGL',device.width,JSON.stringify(initial),'ERRORS',JSON.stringify(errors.slice(0,8)));
+                if(initial.ready){
+                  await page.mouse.move(device.width*.53,device.height*.68);
+                  await page.waitForTimeout(450);
+                  const result=await page.evaluate(()=>{
+                    const canvas=document.querySelector('#riftCanvas');
+                    return {width:canvas.width,height:canvas.height,screenWidth:canvas.clientWidth,pixelDensity:+(canvas.width/canvas.clientWidth).toFixed(2)};
+                  });
+                  console.log('RIFT CANVAS DENSITY',device.width,JSON.stringify(result));
+                  if(device.width===390 && result.pixelDensity<1.1)throw Error('Mobile render unexpectedly low density');
+                  await page.evaluate(()=>{
+                    Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+                    document.dispatchEvent(new Event('visibilitychange'));
+                  });
+                  await page.screenshot({path:'rift-real-webgl-'+device.width+'.png',timeout:30000});
+                }
+                if(errors.some(e=>/Uncaught|ReferenceError|TypeError|Cannot read/.test(e)))throw Error(errors.join('\n'));
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rift-actual-webgl-render
+          path: rift-real-webgl-*.png
+          if-no-files-found: ignore
