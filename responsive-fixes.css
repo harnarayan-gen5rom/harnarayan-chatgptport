@@ -1,0 +1,272 @@
+/* GEN5ROM / RIFT ENGINE — RESPONSIVE EDITION 02
+ * Layout rules are intentionally loaded LAST. All content lives in one
+ * centered safe-area grid; the 3D work stays independent of the UI.
+ */
+html{scroll-snap-type:none;scroll-padding-top:76px}
+html,body{max-width:100%;overflow-x:clip}
+.rift-section{min-height:0;height:100svh;min-height:min(650px,100svh)}
+.rift-nav.shell,.rift-bottom.shell{
+  width:min(calc(100% - 2*clamp(22px,4.5vw,78px)),1440px);
+  margin-inline:auto;
+}
+.rift-nav{min-width:0;gap:clamp(15px,2vw,27px)}
+.rift-mark{flex:none;letter-spacing:.17em}
+.rift-mark b{width:clamp(14px,4vw,75px)}
+.rift-nav nav{min-width:0;gap:clamp(16px,2.15vw,30px)}
+.rift-nav nav a,.rift-nav nav button{font-size:clamp(9px,.76vw,11px);letter-spacing:.09em;min-height:42px;display:inline-flex;align-items:center}
+.rift-nav-end{flex-shrink:0;min-width:60px}
+.rift-copy{
+  left:max(clamp(22px,4.5vw,78px),calc((100vw - 1440px)/2));
+  width:min(490px,43vw);
+  max-width:calc(100% - 44px);
+  top:47%;transform:translateY(-45%);
+  transition:opacity .32s ease,transform .42s cubic-bezier(.2,.8,.2,1),visibility 0s;
+}
+.rift-copy h2{
+  font-size:clamp(4.1rem,7.5vw,8rem);
+  line-height:.96;
+  letter-spacing:-.078em;
+  text-wrap:balance;
+  margin:19px 0 15px;
+}
+.rift-copy>p{
+  white-space:normal;
+  font-size:clamp(10px,.9vw,12px);
+  letter-spacing:.14em;
+  line-height:1.55;
+  max-width:100%;
+  margin:18px 0 22px;
+}
+.rift-enter{min-height:46px;padding:12px 17px;font-size:10px}
+.rift-side-note{right:clamp(19px,3vw,51px)}
+.rift-bottom{bottom:clamp(18px,3vw,32px)}
+.rift-bottom-right,.rift-drag-hint{min-width:0;gap:12px}
+.rift-bottom-right{flex-shrink:0}
+.rift-copy .rift-index{font-size:9px;letter-spacing:.15em;flex-wrap:wrap}
+.rift-copy .rift-index-line{width:35px}
+.rift-world{contain:paint}
+/* BUGFIX: the old RIFT ENGINE hero was not hidden when gallery was opened.
+   This made both giant headings overlap, especially on mobile. */
+.rift-section.is-gallery .rift-copy,
+.rift-section.is-opening .rift-copy,
+.rift-section.is-gallery .rift-side-note,
+.rift-section.is-opening .rift-side-note{
+  opacity:0;visibility:hidden;transform:translateY(-40%);
+  pointer-events:none;
+}
+.rift-gallery-ui{visibility:hidden}
+.rift-gallery-ui.visible{visibility:visible}
+.rift-gallery-heading{
+  left:max(clamp(22px,4.5vw,78px),calc((100vw - 1440px)/2));
+  top:clamp(105px,12vh,160px);
+  width:min(520px,46%);
+}
+.rift-gallery-heading h2{
+  font-size:clamp(3.6rem,5vw,6.2rem);
+  line-height:1;
+  margin:14px 0 11px;
+}
+.rift-gallery-heading>p{font-size:12px;line-height:1.65}
+.rift-project-nav{
+  right:max(clamp(22px,4.5vw,78px),calc((100vw - 1440px)/2));
+  bottom:clamp(105px,13vh,145px);
+  width:min(330px,34%);
+  gap:9px;
+}
+.rift-project-nav button{
+  min-height:46px;
+  gap:12px;
+  border-color:rgba(255,165,181,.19);
+  background:rgba(7,6,9,.80);
+}
+.rift-project-nav button strong{font-size:10px;line-height:1.4}
+.rift-back{left:max(clamp(22px,4.5vw,78px),calc((100vw - 1440px)/2));bottom:clamp(120px,15vh,155px)}
+.rift-all-link{left:max(clamp(22px,4.5vw,78px),calc((100vw - 1440px)/2));bottom:clamp(184px,22vh,215px)}
+.rift-load{z-index:35}
+/* Keep scroll sections on consistent centerline */
+.pf-site .pf-container{width:min(calc(100% - 2*clamp(22px,4.5vw,78px)),1320px)}
+.pf-site .pf-section-heading>*,.pf-site .pf-intro-grid>*,.pf-site .pf-about-grid>*,.pf-site .pf-contact-grid>*{min-width:0}
+.pf-site h2,.pf-site h3{overflow-wrap:normal}
+.pf-site .pf-contact-right{min-width:0}
+.pf-site .pf-sticky{scroll-margin-top:0}
+.pf-site .pf-nav-links{gap:clamp(13px,2.2vw,32px)}
+.pf-site .pf-project-image img{will-change:auto}
+/* Tablet: reserve distinct lanes for headline, interactive scene and controls. */
+@media(max-width:1024px){
+  .rift-nav-end{display:none}
+  .rift-nav nav{margin-left:auto;gap:clamp(14px,1.8vw,24px)}
+  .rift-copy{width:min(480px,52vw)}
+  .rift-copy h2{font-size:clamp(3.75rem,7.8vw,6.1rem)}
+  .rift-gallery-heading{width:min(480px,56%)}
+  .rift-project-nav{width:min(310px,39%)}
+  .rift-side-note{display:none}
+}
+@media(max-width:760px){
+  .rift-section{height:max(100svh,670px);min-height:670px}
+  .rift-nav{
+    height:73px;
+    padding-block:0;
+    align-items:center;
+  }
+  .rift-mark{font-size:13px}
+  .rift-mark b{display:none}
+  .rift-nav nav{gap:clamp(9px,2vw,17px)}
+  .rift-nav nav a,.rift-nav nav button{font-size:9px;letter-spacing:0;min-height:44px}
+  .rift-nav nav a[href="#experience"],
+  .rift-nav nav a[href="#contact"],
+  .rift-nav nav a[href="#about"]{display:none}
+  .rift-copy{
+    left:clamp(22px,4.5vw,35px);
+    top:clamp(110px,14svh,150px);
+    transform:none;
+    width:min(470px,calc(100% - 44px));
+    max-width:calc(100% - 44px);
+  }
+  .rift-copy h2{
+    font-size:clamp(3.45rem,10.5vw,5.6rem);
+    line-height:.94;
+    letter-spacing:-.075em;
+    margin:12px 0 12px;
+  }
+  .rift-copy>p{font-size:10px;line-height:1.6;letter-spacing:.105em;margin:13px 0 16px;max-width:330px}
+  .rift-copy .rift-index{gap:10px;font-size:8px;letter-spacing:.08em;line-height:1.5}
+  .rift-copy .rift-index-line{width:25px}
+  .rift-enter{min-height:44px;font-size:9px;padding:11px 13px}
+  .rift-world{background:radial-gradient(ellipse 74% 55% at 50% 69%,#241016 0%,#0c090d 60%,#040405 100%)}
+  .rift-vignette{background:linear-gradient(180deg,rgba(2,2,3,.80) 0%,rgba(2,2,3,.52) 19%,rgba(2,2,3,.08) 41%,rgba(2,2,3,.01) 76%,rgba(0,0,1,.68) 100%)}
+  .rift-fallback-rings,.rift-fallback-core,.rift-fallback-energy{left:50%;top:68%}
+  .rift-fallback-rings{width:min(86vw,550px);height:min(86vw,550px)}
+  .rift-fallback-energy{width:min(90vw,580px)}
+  .rift-bottom{bottom:22px}
+  .rift-bottom-right{gap:8px;font-size:9px;letter-spacing:.04em}
+  .rift-drag-hint{gap:8px;font-size:8px;letter-spacing:.06em}
+  .rift-drag-hint i{display:none}
+  .rift-gallery-heading{
+    top:clamp(98px,12svh,130px);
+    left:clamp(22px,4.5vw,35px);
+    width:min(390px,calc(100% - 44px));
+    max-width:calc(100% - 44px);
+  }
+  .rift-gallery-heading h2{font-size:clamp(2.7rem,8vw,4rem);line-height:.97;margin:13px 0 10px}
+  .rift-gallery-heading>p{font-size:11px;line-height:1.55;margin:0;max-width:280px}
+  .rift-project-nav{
+    bottom:105px;
+    right:clamp(22px,4.5vw,35px);
+    width:min(300px,48vw);
+    gap:7px;
+  }
+  .rift-back{left:clamp(22px,4.5vw,35px);bottom:114px}
+  .rift-all-link{left:clamp(22px,4.5vw,35px);bottom:185px}
+  .rift-mobile-guide{display:none}
+  .pf-site .pf-container{width:calc(100% - 2*clamp(22px,4.5vw,35px))}
+}
+@media(max-width:560px){
+  .rift-section{height:max(100svh,660px);min-height:660px}
+  .rift-nav.shell,.rift-bottom.shell{width:calc(100% - 40px)}
+  .rift-nav{height:64px;gap:12px}
+  .rift-mark{font-size:12px;letter-spacing:.12em}
+  .rift-nav nav{gap:14px}
+  .rift-nav nav a,.rift-nav nav button{font-size:9px;letter-spacing:0}
+  .rift-nav nav a[href="#about"],.rift-nav nav a[href="#contact"],.rift-nav nav a[href="#experience"]{display:none}
+  .rift-copy{left:20px;top:clamp(101px,12svh,117px);width:calc(100% - 40px);max-width:calc(100% - 40px);transform:none}
+  .rift-copy h2{
+    font-size:clamp(3.05rem,13.2vw,4.25rem);
+    margin:12px 0 10px;
+    line-height:.94;
+  }
+  .rift-copy>p{font-size:9px;letter-spacing:.065em;line-height:1.6;max-width:95%;margin:11px 0 14px}
+  .rift-index-line{max-width:22px}
+  .rift-enter{min-height:44px;padding:10px 13px;gap:7px;font-size:9px}
+  .rift-enter span:last-child{margin-left:5px}
+  .rift-load{top:66px;right:20px;font-size:7px}
+  .rift-bottom{bottom:18px;gap:8px}
+  .rift-drag-icon{width:30px;height:30px;flex:none;font-size:15px}
+  .rift-drag-hint{flex:1;min-width:0;max-width:52%}
+  #riftState{font-size:8px;white-space:normal;line-height:1.35;letter-spacing:0}
+  .rift-bottom-right{max-width:45%;gap:7px;font-size:8px}
+  #riftProximity{display:none}
+  .rift-divider{display:none}
+  #riftReset{width:38px;height:38px;min-width:38px;min-height:38px}
+  .rift-side-note{display:none}
+  .rift-gallery-heading{
+    top:91px;left:20px;width:calc(100% - 40px);max-width:calc(100% - 40px);
+  }
+  .rift-gallery-heading h2{font-size:clamp(2.5rem,10vw,3.1rem);margin:10px 0 7px;line-height:.93}
+  .rift-gallery-heading .rift-index{font-size:8px;gap:9px;letter-spacing:.07em}
+  .rift-gallery-heading>p{font-size:10px;line-height:1.55;max-width:275px;margin:0}
+  .rift-back{
+    left:20px;right:auto;top:246px;bottom:auto;
+    font-size:8px;line-height:1.3;min-height:39px;
+    padding:11px 12px;max-width:calc(100% - 40px);
+  }
+  .rift-all-link{
+    left:20px;top:292px;bottom:auto;
+    font-size:8px;letter-spacing:.07em;
+    padding:7px 0 5px;
+  }
+  .rift-project-nav{
+    left:20px;right:20px;bottom:94px;width:auto;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+  .rift-project-nav button{
+    min-width:0;min-height:45px;padding:9px 10px;gap:7px;
+    background:rgba(8,8,12,.90);
+    border-color:rgba(255,119,140,.30);
+  }
+  .rift-project-nav button span{font-size:9px;flex:none}
+  .rift-project-nav button strong{font-size:9px;letter-spacing:0;line-height:1.25;min-width:0;overflow-wrap:anywhere}
+  .rift-project-nav button em{font-size:13px;flex:none}
+  .rift-gallery-heading>p{max-width:280px}
+  .rift-vignette{background:linear-gradient(180deg,rgba(2,2,3,.82),rgba(2,2,3,.42) 25%,transparent 43%,transparent 77%,rgba(0,0,1,.72) 100%)}
+  .rift-modal-dialog{max-height:calc(100dvh - 20px);padding:16px}
+  .rift-modal-top{font-size:8px;letter-spacing:.06em}
+  .rift-modal-bottom{font-size:8px;letter-spacing:.04em;flex-wrap:wrap}
+  .rift-modal-dialog h2{font-size:clamp(23px,7.2vw,31px);line-height:1.16}
+  .rift-video-mount iframe{max-height:45dvh}
+  .pf-site .pf-container{width:calc(100% - 40px)}
+  .pf-site .pf-sticky-inner{gap:10px}
+  .pf-site .pf-nav-links{max-width:calc(100% - 102px);gap:15px;padding-inline:4px;min-width:0}
+  .pf-site .pf-nav-links a{min-height:54px;display:flex;align-items:center;font-size:9px}
+  .pf-site .pf-brand{flex:none;font-size:8px;letter-spacing:.06em}
+  .pf-site .pf-section-heading h2{font-size:clamp(2.35rem,9.3vw,3.3rem);line-height:1.22}
+  .pf-site .pf-intro-grid h2{font-size:clamp(3.0rem,11vw,4.9rem);line-height:1.25}
+  .pf-site .pf-contact-grid h2{font-size:clamp(2.9rem,10.7vw,4.3rem);line-height:1.2}
+  .pf-site .pf-kicker{letter-spacing:.07em}
+  .pf-site .pf-work-grid{gap:26px}
+  .pf-site .pf-project-info strong{font-size:15px;line-height:1.45}
+  .pf-site .pf-job-date strong{letter-spacing:.06em}
+  .pf-site .pf-cta-line{align-items:stretch}
+  .pf-site .pf-action{min-height:44px}
+  .pf-site .pf-email{overflow-wrap:anywhere;word-break:break-word}
+  .pf-site .pf-tools-grid{min-width:0}
+}
+@media(max-width:380px){
+  .rift-mark{font-size:11px;letter-spacing:.08em}
+  .rift-nav nav{gap:9px}
+  .rift-nav nav a,.rift-nav nav button{font-size:8px}
+  .rift-copy h2{font-size:clamp(2.92rem,13vw,3.35rem)}
+  .rift-copy .rift-index{font-size:7.5px;letter-spacing:.03em}
+  .rift-gallery-heading h2{font-size:clamp(2.35rem,9.7vw,2.7rem)}
+  .rift-back{top:237px}
+  .rift-all-link{top:284px}
+  .rift-project-nav button strong{font-size:8px}
+  .pf-site .pf-container{width:calc(100% - 34px)}
+  .pf-site .pf-sticky-inner{gap:7px}
+}
+@media(max-width:560px) and (max-height:730px){
+  .rift-copy{top:100px}
+  .rift-gallery-heading{top:88px}
+  .rift-back{top:229px}
+  .rift-all-link{top:272px}
+  .rift-project-nav{bottom:88px}
+}
+@media(min-width:561px) and (max-height:760px){
+  .rift-copy h2{font-size:clamp(3.6rem,6vw,5.5rem)}
+  .rift-gallery-heading h2{font-size:clamp(3rem,4vw,4.8rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rift-copy{transition:none}
+}
+/* Ensure no hidden loading, modal or inaccessible interactive labels overlap. */
+#riftGalleryUi[hidden],#riftModal[hidden],#pfModal[hidden]{display:none!important}
