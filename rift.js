@@ -11,6 +11,13 @@ const modalClose=$("#riftModalClose"),modalTitle=$("#riftModalTitle"),modalDesc=
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const coarse=matchMedia("(pointer:coarse)").matches;
 const lowPower=coarse||((navigator.deviceMemory||8)<=4)||((navigator.hardwareConcurrency||8)<=4);
+// Keep mobile high-density; use a pixel budget rather than forcing blurry 1x output.
+const renderDpr=(w=Math.max(1,section.clientWidth),h=Math.max(1,section.clientHeight))=>{
+ const native=window.devicePixelRatio||1;
+ const budget=lowPower?1550000:2650000;
+ const limit=Math.sqrt(budget/Math.max(1,w*h));
+ return Math.max(1,Math.min(native,lowPower?1.85:2,limit));
+};
 const small=()=>section.clientWidth<700;
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n)),mix=(a,b,v)=>a+(b-a)*v;
 const damp=(a,b,k,dt)=>mix(a,b,1-Math.exp(-k*dt)),ease=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
@@ -25,11 +32,11 @@ let THREE,renderer,scene,camera,raycaster,plane,mech,blades=[],rings=[],filament
 let core,coreGlow,coreRing,shockRing,coreLight,cursorLight,bladed,orbital;
 let fragments,fragNode,fragSeed,fragSize,points,pointsGeo,pointsBase,pointsMaterial;
 let gallery,projectCards=[],projectTargets=[],galleryLamp,resizeObs;
-let loaded=false,loading=false,visible=false,frame=0,prior=0,time=0,hot=0,shock=0,transition=0,slowFrames=0,qualityReduced=false;
+let loaded=false,loading=false,visible=false,frame=0,prior=0,time=0,hot=0,shock=0,transition=0,slowFrames=0,qualityReduced=false,qualityCooldown=0;
 let mode="anomaly",overProject=-1,modalOpen=false,previousFocus=null,oldOverflow="";
 let pointerActive=false,touchDrag=false,pressOrigin=null,lastInfo=0,frameNumber=0;
 const cursor={x:.72,y:.48,worldX:0,worldY:0},smooth={x:.72,y:.48,worldX:0,worldY:0};
-const center=()=>({x:small()?.10:1.52,y:small()?-.55:-.07,z:small()?15.2:13.4});
+const center=()=>({x:small()?0:1.52,y:small()?-2.06:-.07,z:small()?16.2:13.4});
 const setState=txt=>{if(state&&state.textContent!==txt)state.textContent=txt;};
 function progress(n){loadFill.style.width=clamp(n,0,100)+"%";}
 function finishLoading(){progress(100);load.classList.add("done");setTimeout(()=>load.hidden=true,700);}
@@ -98,6 +105,8 @@ section.addEventListener("touchmove",e=>{
 },{passive:true});
 function galleryVisible(v){
  ui.hidden=!v;
+ section.classList.toggle("is-gallery",v);
+ section.classList.remove("is-opening");
  if(v)requestAnimationFrame(()=>ui.classList.add("visible"));
  else ui.classList.remove("visible");
 }
@@ -108,6 +117,7 @@ function openRift(){
   $("#riftPageIndex").textContent="02 / 02";showInfo();return;
  }
  mode="rupturing";shock=1;
+ section.classList.add("is-opening");
  entry.disabled=true;entry.textContent="OPENING THE RIFT…";
  // UI completion is scheduled on wall time, not on how quickly a GPU can draw frames.
  // Particularly important for older integrated GPUs and software WebGL.
@@ -354,7 +364,7 @@ function poster(i){
 }
 function buildGallery(){
  gallery=new THREE.Group();gallery.visible=false;gallery.position.z=-2;scene.add(gallery);
- const m=small(),coords=m?[[-1.27,1.46],[1.27,1.46],[-1.27,-1.2],[1.27,-1.2]]:[[-3.38,-.12],[-1.14,.26],[1.14,-.06],[3.38,.24]];
+ const m=small(),coords=m?[[-.82,.77],[.82,.77],[-.82,-.77],[.82,-.77]]:[[-3.38,-.12],[-1.14,.26],[1.14,-.06],[3.38,.24]];
  for(let i=0;i<4;i++){
   const group=new THREE.Group(),w=m?2.05:1.88,h=m?2.50:2.55;
   const shell=new THREE.Mesh(new THREE.BoxGeometry(w,h,.14),new THREE.MeshPhysicalMaterial({color:0x2a292d,metalness:.76,roughness:.31,clearcoat:.75}));
@@ -376,10 +386,11 @@ function fit(){
  const w=Math.max(1,section.clientWidth),h=Math.max(1,section.clientHeight);
  renderer.setSize(w,h,false);
  camera.aspect=w/h;camera.fov=w<700?42:38;camera.updateProjectionMatrix();
+ if(renderer)renderer.setPixelRatio(qualityReduced?Math.max(1.15,renderDpr(w,h)*.78):renderDpr(w,h));
  const c=center();if(mech)mech.position.set(c.x,c.y,0);
  if(projectCards.length){
    const mobile=small();
-   const positions=mobile?[[-1.27,1.46],[1.27,1.46],[-1.27,-1.20],[1.27,-1.20]]:[[-3.38,-.12],[-1.14,.26],[1.14,-.06],[3.38,.24]];
+   const positions=mobile?[[-.82,.77],[.82,.77],[-.82,-.77],[.82,-.77]]:[[-3.38,-.12],[-1.14,.26],[1.14,-.06],[3.38,.24]];
    projectCards.forEach((p,i)=>{
      p.x=positions[i][0];p.y=positions[i][1];p.group.position.x=p.x;p.group.position.y=p.y;
    });
@@ -389,12 +400,12 @@ async function begin(){
  if(loading||loaded||reduced)return;
  loading=true;progress(12);
  try{
-  const gl=canvas.getContext("webgl2",{alpha:true,antialias:!coarse,powerPreference:coarse?"low-power":"high-performance"});
+  const gl=canvas.getContext("webgl2",{alpha:true,antialias:true,powerPreference:coarse?"low-power":"high-performance"});
   if(!gl)throw Error("WebGL2 unavailable");
   progress(29);
   THREE=await import("https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js");
-  renderer=new THREE.WebGLRenderer({canvas,context:gl,alpha:true,antialias:!coarse,powerPreference:coarse?"low-power":"high-performance"});
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,lowPower?1.12:1.65));
+  renderer=new THREE.WebGLRenderer({canvas,context:gl,alpha:true,antialias:true,powerPreference:coarse?"low-power":"high-performance"});
+  renderer.setPixelRatio(renderDpr());
   renderer.setClearColor(0x050506,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.31;
@@ -485,10 +496,19 @@ function tick(now){
  const dt=Math.min(elapsedSeconds,.05);
  prior=now;time+=dt;frameNumber++;
  // Transitions use actual wall-clock delta, while physical spring integration is clamped.
- if(elapsedSeconds>.085)slowFrames++;else slowFrames=Math.max(0,slowFrames-1);
- if(slowFrames>=3&&!qualityReduced){
-   qualityReduced=true;
-   renderer.setPixelRatio(Math.min(.85,devicePixelRatio||1));
+ // Ignore isolated layout/network stalls. Only sustained low FPS reduces resolution.
+ // Never drop straight to 0.85 DPR, which creates visibly blurry phone renders.
+ if(elapsedSeconds>.041)slowFrames=Math.min(80,slowFrames+1);
+ else slowFrames=Math.max(0,slowFrames-2);
+ qualityCooldown=Math.max(0,qualityCooldown-dt);
+ if(slowFrames>=24&&!qualityReduced&&qualityCooldown===0){
+   qualityReduced=true;qualityCooldown=8;
+   renderer.setPixelRatio(Math.max(1.15,renderDpr()*.78));
+   renderer.setSize(Math.max(1,section.clientWidth),Math.max(1,section.clientHeight),false);
+ }
+ if(slowFrames<=5&&qualityReduced&&qualityCooldown===0){
+   qualityReduced=false;qualityCooldown=8;
+   renderer.setPixelRatio(renderDpr());
    renderer.setSize(Math.max(1,section.clientWidth),Math.max(1,section.clientHeight),false);
  }
  const origin=center();
@@ -533,7 +553,7 @@ function tick(now){
    shockRing.material.opacity=.46*shock;
    shockRing.visible=shock>.003;
  }
- const scale=(small()?.82:1)*(1-factor*.74);
+ const scale=(small()?.48:1)*(1-factor*.74);
  mech.scale.setScalar(scale);mech.position.set(origin.x,origin.y,-factor*.5);
  coreLight.position.set(origin.x+core.position.x,origin.y+core.position.y,3.5);
  coreLight.intensity=65+hot*95+factor*115;
@@ -542,13 +562,14 @@ function tick(now){
  updateEnergy(factor);
  if(frameNumber%2===0||coarse)updateFragments(factor);
  gallery.visible=factor>.37;gallery.position.z=-2+factor*2;
+ gallery.position.y=damp(gallery.position.y,small()?-.61:0,2.4,dt);
  gallery.scale.setScalar(Math.max(.001,factor));
  for(let i=0;i<projectCards.length;i++){
   const p=projectCards[i],v=mode==="gallery"&&overProject===i?1:0;
   p.hover=damp(p.hover,v,6.2,dt);
   p.group.position.z=p.z+p.hover*.75;
   p.group.rotation.y=p.x*.035+(smooth.x-.5)*.10+p.hover*(p.x>0?-.12:.12);
-  p.group.rotation.x=(smooth.y-.5)*-.07;p.group.scale.setScalar(1+p.hover*.075);
+  p.group.rotation.x=(smooth.y-.5)*-.07;p.group.scale.setScalar((small()?.64:1)*(1+p.hover*.075));
  }
  const z=(mode==="gallery"?(small()?10.6:11.3):origin.z-(mode==="rupturing"||mode==="reforming"?factor*5.6:0));
  camera.position.x=damp(camera.position.x,(smooth.x-.5)*.34+Math.sin(time*.14)*.04,2.7,dt);
